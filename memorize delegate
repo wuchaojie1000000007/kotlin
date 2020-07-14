@@ -22,10 +22,10 @@ class Memorize<T, R>(val func: (T) -> R) {
 lateinit var fib1: (Int) -> Long
 
 // Second version.[ outside of main ]
-val fib2: (Int) -> Long by Memorize {n:Int->
-    when(n){
+val fib2: (Int) -> Long by Memorize { n: Int ->
+    when (n) {
         0, 1 -> 1L
-        else -> fib2(n-1)+fib2(n-2)
+        else -> fib2(n - 1) + fib2(n - 2)
     }
 }
 
