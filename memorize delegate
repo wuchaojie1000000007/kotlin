@@ -1,3 +1,5 @@
+import android.os.Build
+import androidx.annotation.RequiresApi
 import kotlin.reflect.KProperty
 import kotlin.system.measureTimeMillis
 
@@ -29,6 +31,17 @@ val fib2: (Int) -> Long by Memorize { n: Int ->
     }
 }
 
+val prices = mapOf<Int, Int>(1 to 2, 2 to 4, 3 to 6, 4 to 7, 5 to 10, 6 to 17, 7 to 17)
+val maxPrice: (Int) -> Int by Memorize { length: Int ->
+    val priceAtLength = prices.getOrDefault(length, 0)
+
+    (1..length / 2).fold(priceAtLength) { max, cutLength ->
+        val cutPrice = maxPrice(cutLength) + maxPrice(length - cutLength)
+        maxOf(max, cutPrice)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
 fun main() {
 
     // First version.[ inside of main ]
@@ -39,10 +52,13 @@ fun main() {
         }
     }.memorize()
 
+
     println(measureTimeMillis { fib1(40) })
     println(measureTimeMillis { fib1(45) })
     println(measureTimeMillis { fib1(2000) })
 
     println(measureTimeMillis { fib2(60) })
     println(measureTimeMillis { fib2(64) })
+
+    (1..7).forEach { println("maxPrice $it: ${maxPrice(it)}") }
 }
