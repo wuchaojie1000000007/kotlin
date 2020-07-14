@@ -1,0 +1,48 @@
+import kotlin.reflect.KProperty
+import kotlin.system.measureTimeMillis
+
+// First version.[ outside of main ]
+fun <T, R> ((T) -> R).memorize(): ((T) -> R) {
+    val original = this
+    val cache = mutableMapOf<T, R>()
+
+    return { n: T -> cache.getOrPut(n) { original(n) } }
+}
+
+// Second version.[ outside of main ]
+class Memorize<T, R>(val func: (T) -> R) {
+    val cache = mutableMapOf<T, R>()
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>) = { n: T ->
+        cache.getOrPut(n) { func(n) }
+    }
+}
+
+// First version.[ outside of main ]
+lateinit var fib1: (Int) -> Long
+
+// Second version.[ outside of main ]
+val fib2: (Int) -> Long by Memorize {n:Int->
+    when(n){
+        0, 1 -> 1L
+        else -> fib2(n-1)+fib2(n-2)
+    }
+}
+
+fun main() {
+
+    // First version.[ inside of main ]
+    fib1 = { n: Int ->
+        when (n) {
+            0, 1 -> 1L
+            else -> fib1(n - 1) + fib1(n - 2)
+        }
+    }.memorize()
+
+    println(measureTimeMillis { fib1(40) })
+    println(measureTimeMillis { fib1(45) })
+    println(measureTimeMillis { fib1(2000) })
+
+    println(measureTimeMillis { fib2(60) })
+    println(measureTimeMillis { fib2(64) })
+}
