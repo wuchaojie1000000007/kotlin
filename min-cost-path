@@ -1,0 +1,49 @@
+// Space complexity O( m * n )
+
+import kotlin.reflect.KProperty
+
+class Memorize<T, R>(val func: (Pair<T, T>) -> R) {
+    val cache = mutableMapOf<Pair<T, T>, R>()
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>) = { (m, n): Pair<T, T> ->
+        cache.getOrPut(Pair(m, n)) { func(Pair(m, n)) }
+    }
+}
+
+lateinit var cost: Array<IntArray>
+
+val minCost: (Pair<Int, Int>) -> Int by Memorize { (m, n) ->
+    when {
+        m == 0 -> {
+            (0..n).fold(0) { sum, i -> sum + cost[0][i] }
+        }
+        n == 0 -> {
+            (0..m).fold(0) { sum, i -> sum + cost[i][n] }
+        }
+        else -> {
+            minOf(
+                minCost(Pair(m - 1, n)),
+                minCost(Pair(m, n - 1)),
+                minCost(Pair(m - 1, n - 1))
+            ) + cost[m][n]
+        }
+    }
+}
+
+fun main() {
+
+    cost = arrayOf(intArrayOf(1, 2, 3), intArrayOf(4, 8, 2), intArrayOf(1, 5, 3))
+
+    // 8
+    println(minCost(Pair(2, 2)))
+
+    // 10
+    println(minCost(Pair(2, 1)))
+}
+
+fun <T, R> ((T) -> R).memorize(): ((T) -> R) {
+    val original = this
+    val cache = mutableMapOf<T, R>()
+
+    return { n: T -> cache.getOrPut(n) { original(n) } }
+}
