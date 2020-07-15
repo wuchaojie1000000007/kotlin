@@ -1,3 +1,5 @@
+// Time complexity O( n * n ) use dp.
+
 import kotlin.reflect.KProperty
 
 class Memorize<T, R>(val func: (T) -> R) {
