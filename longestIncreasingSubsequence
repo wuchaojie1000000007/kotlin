@@ -1,0 +1,36 @@
+import kotlin.reflect.KProperty
+
+class Memorize<T, R>(val func: (T) -> R) {
+    val cache = mutableMapOf<T, R>()
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>) = { n: T ->
+        cache.getOrPut(n) { func(n) }
+    }
+}
+
+val longestIncreasingSubsequence: (IntArray) -> Int by Memorize { arr: IntArray ->
+    (1..arr.size - 1).fold(1) { max, subArrSize ->
+        if (arr.last() > arr[subArrSize - 1])
+            maxOf(max, longestIncreasingSubsequence(arr.copyOfRange(0, subArrSize)) + 1)
+        else
+            max
+    }
+}
+
+fun main() {
+
+    // 1, 2, 4, 6, 7
+    val arr = intArrayOf(1, 2, 5, 4, 3, 6, 7)
+    println(longestIncreasingSubsequence(arr))
+
+    // 1, 2, 3
+    val arr2 = intArrayOf(7, 6, 5, 4, 3, 2, 1, 2, 3)
+    println(longestIncreasingSubsequence(arr2))
+}
+
+fun <T, R> ((T) -> R).memorize(): ((T) -> R) {
+    val original = this
+    val cache = mutableMapOf<T, R>()
+
+    return { n: T -> cache.getOrPut(n) { original(n) } }
+}
