@@ -1,0 +1,48 @@
+// Space complexity O( m *n )
+
+import kotlin.reflect.KProperty
+
+class Memorize<T, R>(val func: (Pair<T, T>) -> R) {
+    val cache = mutableMapOf<Pair<T, T>, R>()
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>) = { (m, n): Pair<T, T> ->
+        cache.getOrPut(Pair(m, n)) { func(Pair(m, n)) }
+    }
+}
+
+val editDistance: (Pair<String, String>) -> Int by Memorize { (m, n) ->
+    when {
+        m.length == 0 -> n.length
+        n.length == 0 -> m.length
+        m.last() == n.last() -> {
+            editDistance(Pair(m.substring(0, m.length - 1), n.substring(0, n.length - 1)))
+        }
+        else -> {
+            minOf(
+                editDistance(Pair(m.substring(0, m.length), n.substring(0, n.length - 1))),
+                editDistance(Pair(m.substring(0, m.length - 1), n.substring(0, n.length))),
+                editDistance(Pair(m.substring(0, m.length - 1), n.substring(0, n.length - 1)))
+            )+1
+        }
+    }
+}
+
+fun main() {
+
+    // 4
+    val arr = "AGGTAB"
+    val arr2 = "GXTXAYB"
+    println(editDistance(Pair(arr, arr2)))
+
+    // 1
+    val arr3 = "A"
+    val arr4 = "B"
+    println(editDistance(Pair(arr3, arr4)))
+}
+
+fun <T, R> ((T) -> R).memorize(): ((T) -> R) {
+    val original = this
+    val cache = mutableMapOf<T, R>()
+
+    return { n: T -> cache.getOrPut(n) { original(n) } }
+}
