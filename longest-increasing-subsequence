@@ -1,4 +1,4 @@
-// Time complexity O( n * n ) use dp.
+// Time complexity O( n * n ) use dp. Only get LIS size, without real value.
 
 import kotlin.reflect.KProperty
 
@@ -10,6 +10,7 @@ class Memorize<T, R>(val func: (T) -> R) {
     }
 }
 
+// Strickly increase.
 val longestIncreasingSubsequence: (IntArray) -> Int by Memorize { arr: IntArray ->
     (1..arr.size - 1).fold(1) { max, subArrSize ->
         if (arr.last() > arr[subArrSize - 1])
@@ -21,11 +22,11 @@ val longestIncreasingSubsequence: (IntArray) -> Int by Memorize { arr: IntArray 
 
 fun main() {
 
-    // 1, 2, 4, 6, 7
+    // 5
     val arr = intArrayOf(1, 2, 5, 4, 3, 6, 7)
     println(longestIncreasingSubsequence(arr))
 
-    // 1, 2, 3
+    // 3
     val arr2 = intArrayOf(7, 6, 5, 4, 3, 2, 1, 2, 3)
     println(longestIncreasingSubsequence(arr2))
 }
