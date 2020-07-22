@@ -1,0 +1,28 @@
+fun fib1(int: Int):Int = if (int <= 1) int else fib1(int - 1) + fib1(int - 2)
+
+val fib2: (Int) -> Int by Memorize { arg:Int ->
+    if (arg<=1) arg
+    else fib2(arg-1) + fib2(arg-2)
+}
+
+fun fib3(int: Int):Int{
+    val arr = IntArray(int+1){0}
+    arr[1] = 1
+    (2..int).forEach {
+        arr[it] = arr[it-1] + arr[it-2]
+    }
+    return arr[int]
+}
+fun main() {
+    val time1 = measureNanoTime {
+        println(fib1(45))
+    }.also { println("recursion time: $it ns") }
+
+    val time2 = measureNanoTime {
+        println(fib2(45))
+    }.also { println("memorization time: $it ns") }
+
+    val time3 = measureNanoTime{
+        println(fib3(45))
+    }.also { println("tabulation time: $it ns") }
+}
