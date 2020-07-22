@@ -1,0 +1,40 @@
+fun LIS(intArray: IntArray): IntArray {
+    val size = intArray.size
+    val lis = Array(size) { listOf<Int>() }
+
+    lis[0] = listOf(intArray[0])
+
+    // Index with LIS.
+    var index = 0
+    for (i in 1..size - 1) {
+
+        // See if ith value is bigger than some value before it.
+        var tagIndex = -1
+        for (j in 0..i - 1) {
+
+            // Find smaller value, change target index if need.
+            if (intArray[i] >= intArray[j] && (tagIndex == -1 || lis[j].size > lis[tagIndex].size)) tagIndex = j
+
+            // Put LIS of size i+1 into array.
+            lis[i] = if (tagIndex == -1) listOf(intArray[i]) else lis[tagIndex] + intArray[i]
+
+            // Keep track which index has LIS
+            if (lis[i].size > lis[index].size) index = i
+
+        }
+    }
+
+    return lis[index].toIntArray()
+}
+
+
+fun main() {
+    // 3 4 5 
+    val arr = intArrayOf(3, 2, 6, 4, 5, 1)
+    LIS(arr).forEach { print("$it ") }
+    println()
+
+    // 0 1 2 3 4 5 6 7 8 
+    val arr2 = IntArray(9) { it }
+    LIS(arr2).forEach { print("$it ") }
+}
