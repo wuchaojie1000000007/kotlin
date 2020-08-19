@@ -1,0 +1,38 @@
+// For n * m grid map problem
+fun main() {
+    val r = System.`in`.bufferedReader()
+    val s1 = StringBuilder()
+    val n = r.readLine()!!.toInt()
+    //val (n, k) = r.readLine()!!.split(" ").map { it.toInt() }
+    //val v = r.readLine()!!.split(" ").map { it.toInt() }
+    val adj = List(n) { List(n) { mutableListOf<Pair<Int, Int>>() } }
+    repeat(n - 1) { i ->
+        (0..n - 2).forEach { j ->
+            adj[i][j] += Pair(i, j + 1)
+            adj[i][j + 1] += Pair(i, j)
+            adj[i][j] += Pair(i + 1, j)
+            adj[i + 1][j] += Pair(i, j)
+        }
+        adj[i][n - 1] += Pair(i + 1, n - 1)
+        adj[i + 1][n - 1] += Pair(i, n - 1)
+    }
+    (0..n - 2).forEach { j ->
+        adj[n - 1][j] += Pair(n - 1, j + 1)
+        adj[n - 1][j + 1] += Pair(n - 1, j)
+    }
+    val map = List(n) { r.readLine()!! }
+    var ans = true
+    loop@for (i in 0..n-1){
+        for (j in 0..n-1){
+            var neighbor = 0
+            for ((x, y) in adj[i][j]){
+                if (map[x][y]=='o') neighbor++
+            }
+            if (neighbor%2==1) {
+                ans = false
+                break@loop
+            }
+        }
+    }
+    println(if (ans) "YES" else "NO")
+}
